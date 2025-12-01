@@ -108,15 +108,9 @@ const NewArrivals = () => {
 
   const updateScrollButtons = () => {
     const container = scrollRef.current;
-    // console.log({
-    //   scrollLeft: container.scrollLeft,
-    //   clientWidth: container.clientWidth,
-    //   containerScrollWidth: container.scrollWidth,
-    // });
     if (container) {
       const leftScroll = container.scrollLeft;
       const visibleRightEdge = leftScroll + container.clientWidth;
-      // Use a tolerant comparison to account for fractional pixels from smooth scrolling
       const atEnd =
         Math.ceil(visibleRightEdge) >= Math.floor(container.scrollWidth);
 
@@ -128,9 +122,7 @@ const NewArrivals = () => {
   useEffect(() => {
     const container = scrollRef.current;
     if (container) {
-      // Add scroll listener and ensure we remove it on cleanup to avoid multiple listeners
       container.addEventListener("scroll", updateScrollButtons);
-      // Recompute initially (and after renders)
       updateScrollButtons();
       const onResize = () => updateScrollButtons();
       window.addEventListener("resize", onResize);
@@ -143,23 +135,25 @@ const NewArrivals = () => {
   }, []);
 
   return (
-    <section className="pl-4 pr-4">
-      <div className="container mx-auto text-center mb-10 relative">
-        <h2 className="text-3xl font-bold mb-4">Explore New Arrivals</h2>
-        <p className="text-lg text-gray-600 mb-8">
-          Discover the latest styles straight off the runway, freshly added to
-          keep your wardrobe on the cutting edge of fashion.
-        </p>
+    <section className="relative py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold mb-4">Explore New Arrivals</h2>
+          <p className="text-lg text-gray-600 mb-8">
+            Discover the latest styles straight off the runway, freshly added to
+            keep your wardrobe on the cutting edge of fashion.
+          </p>
+        </div>
 
         {/* Scroll buttons */}
-        <div className="absolute right-0 bottom-[-30px] flex space-x-2 p-4">
+        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2 z-10">
           <button
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
-            className={`p-2 rounded border ${
+            className={`p-2 rounded-full bg-white shadow-md ${
               canScrollLeft
-                ? " bg-white text-black"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                ? "text-black hover:bg-gray-100"
+                : "text-gray-300 cursor-not-allowed"
             }`}
           >
             <FiChevronLeft className="text-2xl" />
@@ -167,42 +161,43 @@ const NewArrivals = () => {
           <button
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
-            className={`p-2 rounded border ${
+            className={`p-2 rounded-full bg-white shadow-md ${
               canScrollRight
-                ? " bg-white text-black"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                ? "text-black hover:bg-gray-100"
+                : "text-gray-300 cursor-not-allowed"
             }`}
           >
             <FiChevronRight className="text-2xl" />
           </button>
         </div>
-      </div>
 
-      {/* Scrollable content */}
-      <div className="container mx-auto px-4">
+        {/* Scrollable content */}
         <div
           ref={scrollRef}
-          className="flex space-x-4 md:space-x-6 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide"
+          className="flex space-x-6 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide"
+          style={{ scrollbarWidth: "none" }} // For Firefox
         >
           {newArrivals.map((product) => (
             <div
               key={product._id}
               className="flex-none w-4/5 sm:w-2/5 md:w-1/3 lg:w-1/4 xl:w-1/5 px-2"
             >
-              <div className="aspect-w-3 aspect-h-4 w-full overflow-hidden rounded-lg bg-gray-100">
+              <div className="group relative overflow-hidden rounded-lg bg-gray-50">
                 <img
                   src={product.images[0]?.url}
                   alt={product.images[0]?.altText || product.name}
-                  className="h-full w-full object-cover object-center"
+                  className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="absolute bottom-0 right-0 left-0 bg-black bg-opacity-50 backdrop-blur-sm text-white p-3 md:p-4 rounded-b-lg">
-                  <Link to={`/product/${product._id}`} className="block">
-                    <h4 className="font-medium text-sm md:text-base">
-                      {product.name}
-                    </h4>
-                    <p className="mt-0.5 text-sm md:text-base">
-                      ${product.price}
-                    </p>
+                <div className="p-4">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {product.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-700">${product.price}</p>
+                  <Link
+                    to={`/product/${product._id}`}
+                    className="mt-2 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    View details
                   </Link>
                 </div>
               </div>
